@@ -1,83 +1,98 @@
 # CookPilot
 
-요리할수록 사용자의 입맛을 기억하는 실시간 AI 조리 코치
+조리 화면에서만 동작하는 음성 기반 실시간 AI 조리 코치
 
-초보 요리자가 조리 중 겪는 타이밍, 불 조절, 간 조절, 상태 판단 문제를 음성 대화로 지원하는 AI 조리 코치입니다. 조리 세션의 행동, 수정 메모, 결과 평가를 개인 레시피 메모리에 축적하고, 다음 조리 시 개인화된 단계·시간·간 조절을 추천합니다.
+CookPilot은 요리 초보자가 실제 조리 중 겪는 단계 진행, 타이밍, 간 조절, 재료 변경, 상태 판단 문제를 돕는 앱입니다. 사용자가 조리 화면에 있을 때만 STT/TTS 기반 음성 조리 모드를 켜고, 단순 명령은 로컬에서 처리하며, 판단이 필요한 예외 상황만 LLM이 현재 레시피 단계 맥락으로 피드백합니다.
 
-<!-- 데모 링크 / 시연 영상 / 스크린샷 추가 예정 -->
+조리 후에는 사용자의 결과 피드백을 개인 레시피 버전에 반영해, 같은 레시피를 다시 조리할 때 더 나은 "내 버전"을 제공합니다.
 
-## 주요 기능
+## MVP
 
-- **실시간 음성 조리 코치** — 사용자의 발화에 대해 현재 단계와 레시피 상태를 기준으로 다음 행동, 타이머, 주의사항을 음성으로 안내
-- **개인 레시피 메모리** — 맛, 익힘 정도, 실패 원인, 실제 소요 시간 등을 저장하여 반복 조리 시 사용자 고유의 레시피 버전을 축적
-- **개인화 재조리 추천** — 지난 조리 기록을 바탕으로 다음 조리에 적용할 간·시간·순서 조정안을 제안
+2026-07-26까지의 1차 목표는 제한적이지만 실제 동작하는 앱 데모입니다.
 
-## 시스템 구성
-
-```
-사용자 접점 (PWA · 음성 UI)
-        │
-API 계층 (인증 · 조리 세션 · 레시피 관리)
-        │
-AI 오케스트레이션 (LLM Agent · STT/TTS · RAG · Function Calling)
-        │
-도메인 엔진 (조리 세션 상태 머신 · 레시피 태스크 그래프 · 개인화 추천)
-        │
-데이터 계층 (PostgreSQL · Vector DB · Object Storage)
+```text
+레시피 선택
+-> 조리 시작
+-> 현재 단계 표시 + TTS 안내
+-> 단계별 타이머 자동 진행
+-> 조리 중 STT 음성 명령 수신
+-> 단순 명령은 로컬 처리
+-> 예외 상황은 LLM 피드백
+-> 조리 후 피드백 입력
+-> 개인 레시피 버전 업데이트
+-> 다음 조리 때 개인화 버전 제공
 ```
 
-<!-- 시스템 구성도 이미지(Fig 2)를 docs/ 에 추가 후 아래로 교체 권장 -->
-<!-- ![시스템 구성도](docs/architecture.png) -->
+### 포함 범위
 
-## 레포지토리 구성
+- 레시피 선택
+- 조리 시작
+- 조리 화면에서 현재 단계 표시
+- TTS 단계 안내
+- 단계별 타이머 자동 진행
+- 조리 중 STT 음성 명령 수신
+- 다음/이전/반복/타이머 연장 등 로컬 명령 처리
+- "물이 안 끓어", "너무 짜", "덜 익었어", "재료가 없어" 같은 예외 상황 LLM 피드백
+- 조리 후 피드백 입력
+- 개인 레시피 버전 업데이트
+- 다음 조리 때 개인화 버전 제공
+
+### 제외 범위
+
+- 인기 레시피
+- 추천 알고리즘 고도화
+- 남의 버전 추천
+- 사진 기반 익힘/농도 판정
+- 커뮤니티
+- 장보기/냉장고 연동
+- 백그라운드 음성 호출
+- 커스텀 호출어
+- 대규모 레시피 DB
+
+## 음성 동작 원칙
+
+CookPilot은 항상 사용자의 소리를 듣는 앱이 아닙니다. 음성 수신은 사용자가 조리 세션을 시작하고 조리 화면에 있을 때만 활성화됩니다.
+
+```text
+앱 실행
+-> 레시피 선택
+-> 조리 시작
+-> 조리 화면 진입
+-> 음성 조리 모드 ON
+-> 조리 완료/중단/화면 이탈
+-> 음성 조리 모드 OFF
+```
+
+단순 명령은 LLM을 호출하지 않고 앱 내부에서 처리합니다. LLM은 현재 단계 맥락이 필요한 예외 상황과 조리 후 개인화 반영에만 사용합니다.
+
+## 문서
+
+| 문서 | 설명 |
+|---|---|
+| [확정 MVP 설계서](https://github.com/Cook-Pilot/.github/blob/main/docs/confirmed-mvp-voice-loop-spec.md) | 2026-07-10 확정 MVP, STT/TTS 조리 모드, 개인화 루프 |
+| [MVP 논의 로그](https://github.com/Cook-Pilot/.github/blob/main/docs/2026-07-10-cookpilot-mvp-conversation-log.md) | 2026-07-10 Codex/GStack 논의 기록 |
+
+## 레포지토리
 
 | 구분 | 레포 | 설명 |
-|------|------|------|
-| Frontend | [cookpilot-frontend](https://github.com/Cook-Pilot/frontend) |  |
-| Backend | [cookpilot-backend](https://github.com/Cook-Pilot/backend) |  |
+|---|---|---|
+| Frontend | [Cook-Pilot/frontend](https://github.com/Cook-Pilot/frontend) | CookPilot 앱 프론트엔드 |
+| Backend | [Cook-Pilot/backend](https://github.com/Cook-Pilot/backend) | CookPilot API 및 도메인 서버 |
+| Organization | [Cook-Pilot/.github](https://github.com/Cook-Pilot/.github) | 조직 프로필, 공통 문서, PR 템플릿 |
 
-<!-- 조직이름 부분을 실제 레포 주소로 교체 -->
+## 기술 스택 초안
 
-## 기술 스택
+- Frontend: Flutter
+- Backend: Java / Spring
+- AI: STT, TTS, LLM, structured command routing
+- Data: recipe session, cook events, personal recipe versions
 
-- **Frontend** — Flutter
-- **Backend** — Java/Spring
-- **AI** — LLM(GPT-4o), STT/TTS, RAG, Function Calling, Agent Orchestration
-<!-- 백엔드 언어/프레임워크 및 사용 Vector DB 확정 후 기입 -->
-
-## 시작하기
-
-각 레포의 README를 참고합니다. 아래는 작성 예정 항목입니다.
-
-```bash
-# 작성 예정
-# 1. 레포 클론
-# 2. 환경 변수 설정 (.env)
-# 3. 의존성 설치
-# 4. 실행
-```
-
-<!-- 프론트/백 로컬 실행 방법, 필요한 .env 키 목록(OPENAI_API_KEY 등) 정리 -->
-
-## 팀 구성 (B1P3)
-
-| 이름 | 역할 |
-|------|------|
-| 이현우 | 팀장 |
-| 전동훈 |  |
-| 이요환 | |
-
-<!-- 필요 시 각 팀원 GitHub 프로필 링크 추가 -->
-
-
-<!--
-추후 추가 권장 항목
-- 라이선스 (LICENSE) — 상업화/출시 계획 시 신중히 결정
-- 스크린샷 / 데모
-- API 문서 링크 (Swagger/Postman)
-- 컨벤션 문서 (커밋 규칙, 브랜치 전략, PR 템플릿)
-- 기여 가이드 (CONTRIBUTING.md)
-- 배포 주소
--->
+## 팀
 
 AI·SW 마에스트로 제17기 프로젝트
+
+| 이름 | 역할 |
+|---|---|
+| 이현우 | 팀장 |
+| 전동훈 | 팀원 |
+| 이요환 | 팀원 |
