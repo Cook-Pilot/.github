@@ -33,41 +33,28 @@ AI 오케스트레이션 (LLM Agent · STT/TTS · RAG · Function Calling)
 
 | 구분 | 레포 | 설명 |
 |------|------|------|
-| Frontend | [cookpilot-frontend](https://github.com/Cook-Pilot/frontend) |  |
-| Backend | [cookpilot-backend](https://github.com/Cook-Pilot/backend) |  |
-
-<!-- 조직이름 부분을 실제 레포 주소로 교체 -->
+| Frontend | [frontend](https://github.com/Cook-Pilot/frontend) | Flutter 앱 |
+| Backend | [backend](https://github.com/Cook-Pilot/backend) | Java/Spring API 서버 |
+| Web | [web](https://github.com/Cook-Pilot/web) | 랜딩페이지 |
 
 ## 기술 스택
 
 - **Frontend** — Flutter
 - **Backend** — Java/Spring
-- **AI** — LLM(GPT-4o), STT/TTS, RAG, Function Calling, Agent Orchestration
+- **AI** — LLM, STT/TTS, RAG, Function Calling, Agent Orchestration
 <!-- 백엔드 언어/프레임워크 및 사용 Vector DB 확정 후 기입 -->
 
 ## 시작하기
 
-각 레포의 README를 참고합니다. 아래는 작성 예정 항목입니다.
-
-```bash
-# 작성 예정
-# 1. 레포 클론
-# 2. 환경 변수 설정 (.env)
-# 3. 의존성 설치
-# 4. 실행
-```
-
-<!-- 프론트/백 로컬 실행 방법, 필요한 .env 키 목록(OPENAI_API_KEY 등) 정리 -->
+각 레포의 README를 참고하세요.
 
 ## 팀 구성 (B1P3)
 
 | 이름 | 역할 |
 |------|------|
-| 이현우 | 팀장 |
-| 전동훈 |  |
-| 이요환 | |
-
-<!-- 필요 시 각 팀원 GitHub 프로필 링크 추가 -->
+| [이현우](https://github.com/kodokugorumet) | 팀장 |
+| [전동훈](https://github.com/Jeonsubb) |  |
+| [이요환](https://github.com/Vackam) | |
 
 
 <!--
